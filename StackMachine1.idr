@@ -1,14 +1,10 @@
 module StackMachine1
 
-import Data.Bool
-
 import Data.Nat
 
 import Data.List
 
 import Data.Maybe
-
-import Data.String
 
 data Binop = Plus | Times
 
