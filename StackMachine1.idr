@@ -1,4 +1,4 @@
-module StackMachine
+module StackMachine1
 
 import Data.Bool
 
@@ -42,11 +42,22 @@ progDenote (i :: p) s = case instrDenote i s of
                              
 compile : Exp -> Prog
 compile (EConst n) = [IConst n]                             
-compile (EBinop b e1 e2) = compile e1 ++ compile e2 ++ [IBinop b ]                             
+compile (EBinop b e1 e2) = compile e2 ++ compile e1 ++ [IBinop b ]                      
+compilerHelper1 : (b : Binop) -> (e1 , e2 : Exp) -> (p : Prog) -> (s : Stack)
+  -> progDenote (compile (EBinop b e1 e2) ++ p) s 
+    = progDenote ((compile e2 ++ (compile e1 ++ [IBinop b])) ++ p) s
+compilerHelper1 e1 e2 b p s = Refl
+              
 compilerCorrect : (e : Exp) -> (p : Prog) -> (s : Stack)
   -> progDenote (compile e ++ p) s = progDenote p (expDenote e :: s)
 compilerCorrect (EConst n) p s = Refl
-compilerCorrect (EBinop b e1 e2) p s = ?a_1
-                                                                                                                                                  
+compilerCorrect (EBinop b e1 e2) p s = 
+   rewrite sym (appendAssociative (compile e2) (compile e1 ++ [IBinop b]) p) in 
+   rewrite compilerCorrect e2 ((compile e1 ++ [IBinop b]) ++ p) s in 
+   rewrite sym (appendAssociative (compile e1) [IBinop b] p) in 
+   rewrite compilerCorrect e1 ([IBinop b] ++ p) (expDenote e2 :: s) in Refl
+
+  
+                                                                                                        
 
               
